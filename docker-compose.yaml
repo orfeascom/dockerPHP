@@ -1,0 +1,11 @@
+# define the network of services
+services:
+    # prefer to name the service provided rather than the technology
+    web:
+        image: nginx:latest
+        ports:
+            - "80:80"
+
+    app:
+        build:
+            dockerfile: ./app/Dockerfile
