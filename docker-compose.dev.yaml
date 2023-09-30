@@ -1,8 +1,5 @@
-# will be used for production
-# No volumes mounting. Only for the DB for persistent data (kept on contianer failure)
-# Everything else (app data, nginx conf files) will be copied upon building
-
-# docker compose up --build -d
+# will be used for development
+#docker compose -f docker-compose.dev.yaml up -d
 
 # define the network of services
 services:
@@ -10,23 +7,28 @@ services:
 
     # nginx
     web:
-        build:
-            dockerfile: ./nginx/Dockerfile
+        image: nginx:latest
         ports:
             - "80:80"
+        volumes:
+            - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
 
     # php
     app:
         build:
             dockerfile: ./php/Dockerfile
+        volumes:
+            - ./app:/var/www/html
 
     # mysql
     db:
         image: mysql:8.0
         volumes:
             - mysqldata:/var/lib/mysql
-        restart: unless-stopped # probably to always
-        environment: # won't be hardcoded
+        ports:
+            - "33306:3306"
+        restart: unless-stopped
+        environment:
             MYSQL_ROOT_PASSWORD: secret
             MYSQL_USER: user
             MYSQL_PASSWORD: secret
